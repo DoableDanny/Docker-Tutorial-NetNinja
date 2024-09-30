@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  api:
+    build: ./api # relative path to the folder we want to build
+    container_name: api_c
+    ports:
+      - "4000:4000" # maps the host_port to the container_port
+    volumes:
+      - ./api:/app # tell Docker to look at our code files, rather than those in the container. Allows for real-time updates, as when we change and save our code files, the result will be also be up-to-date in the browser (wouldn't be the case if the container just looked at it's own static files)
+      - /app/node_modules # overrides the above volume and tells Docker to look at the container node_modules rather than our local files (as they may be out of date)
+  myblog:
+    build: ./myblog
+    container_name: myblog_c
+    ports:
+      - "3000:3000"
+    # Adding stdin_open and tty as true basically starts the React app in interactive mode. It's the opposite of "detached mode", and means our React app won't automatically shut down. When running a React app in a development environment, stdin_open: true and tty: true allow you to keep the terminal interactive, meaning you can control the process, see live updates, and possibly use key combinations to restart or stop the server. They are particularly useful when you need to debug or troubleshoot while your React app is running in the container. In a production environment, it's usually unnecessary to keep stdin_open or tty enabled because production processes are typically non-interactive. In summary, enabling stdin_open and tty helps in maintaining an interactive environment for your container, which is particularly useful for React development workflows, especially when using tools that require terminal interactions, like development servers.
+    stdin_open: true # Keep stdin open for interaction
+    tty: true # Allocate a terminal for the container
